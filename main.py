@@ -13,6 +13,8 @@ from starlette.middleware.sessions import SessionMiddleware
 from authlib.integrations.starlette_client import OAuth, OAuthError
 from dotenv import load_dotenv
 
+from user_agents import parse
+
 from database import db, init_indexes
 
 load_dotenv()
@@ -54,10 +56,56 @@ async def ensure_indexes():
             pass  # don't block requests if Atlas is briefly unreachable
 
 
+def get_client_ip(request: Request) -> str:
+    """Real IP — checks proxy headers first (Vercel/Nginx sit in front)."""
+    fwd = request.headers.get("x-forwarded-for")
+    if fwd:
+        return fwd.split(",")[0].strip()   # first IP = original client
+    real = request.headers.get("x-real-ip")
+    if real:
+        return real.strip()
+    return request.client.host if request.client else "unknown"
+
+
+async def log_visit(request: Request):
+    """Store a readable record of who hit the landing page."""
+    ua_string = request.headers.get("user-agent", "")
+    ua = parse(ua_string)  # from user_agents lib
+
+    if ua.is_mobile:
+        device_type = "Mobile"
+    elif ua.is_tablet:
+        device_type = "Tablet"
+    elif ua.is_pc:
+        device_type = "Desktop"
+    elif ua.is_bot:
+        device_type = "Bot"
+    else:
+        device_type = "Unknown"
+
+    await db.visitors.insert_one({
+        "ip": get_client_ip(request),
+        "device_type": device_type,
+        "browser": f"{ua.browser.family} {ua.browser.version_string}".strip(),
+        "os": f"{ua.os.family} {ua.os.version_string}".strip(),
+        "device": ua.device.family,          # e.g. "iPhone", "Samsung SM-G991B"
+        "is_bot": ua.is_bot,
+        "referrer": request.headers.get("referer", "direct"),
+        "language": request.headers.get("accept-language", "").split(",")[0],
+        "path": str(request.url.path),
+        "visited_at": datetime.now(timezone.utc),
+    })
+
+
+
 # ─── Routes ────────────────────────────────────────────────
 @app.get("/", response_class=HTMLResponse)
 async def landing(request: Request):
     await ensure_indexes()
+    try:
+        await log_visit(request)          # don't let logging break the page
+    except Exception:
+        pass
     user = request.session.get("user")
     return templates.TemplateResponse(
     request,
@@ -186,3 +234,58 @@ async def admin_signups(token: str = ""):
             "joined": s.get("completed_at").isoformat() if s.get("completed_at") else None,
         })
     return {"count": len(rows), "signups": rows}
+
+
+@app.get("/admin/visitors")
+async def admin_visitors(token: str = "", limit: int = 200):
+    if token != os.getenv("ADMIN_TOKEN", "set-an-admin-token"):
+        return {"error": "unauthorized"}
+
+    # Recent visits (most recent first)
+    visits = []
+    async for v in db.visitors.find().sort("visited_at", -1).limit(limit):
+        visits.append({
+            "ip": v.get("ip"),
+            "device_type": v.get("device_type"),
+            "browser": v.get("browser"),
+            "os": v.get("os"),
+            "device": v.get("device"),
+            "is_bot": v.get("is_bot"),
+            "referrer": v.get("referrer"),
+            "language": v.get("language"),
+            "visited_at": v.get("visited_at").isoformat() if v.get("visited_at") else None,
+        })
+
+    # Quick rollups so you get the picture at a glance
+    total = await db.visitors.count_documents({})
+    humans = await db.visitors.count_documents({"is_bot": False})
+    unique_ips = len(await db.visitors.distinct("ip"))
+
+    # Top referrers (where traffic comes from)
+    top_referrers = []
+    async for r in db.visitors.aggregate([
+        {"$group": {"_id": "$referrer", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}},
+        {"$limit": 10},
+    ]):
+        top_referrers.append({"source": r["_id"], "count": r["count"]})
+
+    # Device breakdown
+    device_split = []
+    async for d in db.visitors.aggregate([
+        {"$group": {"_id": "$device_type", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}},
+    ]):
+        device_split.append({"type": d["_id"], "count": d["count"]})
+
+    return {
+        "summary": {
+            "total_visits": total,
+            "human_visits": humans,
+            "bot_visits": total - humans,
+            "unique_ips": unique_ips,
+        },
+        "top_referrers": top_referrers,
+        "device_breakdown": device_split,
+        "recent_visits": visits,
+    }
