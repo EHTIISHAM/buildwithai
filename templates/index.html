@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BuildWithAI — Learn to Build AI Products</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Unbounded:wght@400;700;900&family=DM+Sans:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg:#F7F4EF; --ink:#0F0E17; --purple:#4F35D2; --orange:#FF5C00; --green:#00C48C;
+}
+body {
+  font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--ink);
+  min-height:100vh; display:flex; flex-direction:column; align-items:center;
+}
+.top-stripe { width:100%; height:6px; background:linear-gradient(90deg,var(--purple),var(--orange),var(--green)); }
+
+.wrap { width:100%; max-width:600px; padding:0 24px; }
+
+/* HEADER */
+.nav { display:flex; justify-content:space-between; align-items:center; padding:24px 0; }
+.logo { font-family:'Unbounded',sans-serif; font-weight:900; font-size:18px; letter-spacing:-1px; }
+.logo span { color:var(--purple); }
+.logo .ai { color:var(--orange); }
+.nav-tag { font-family:'Space Mono',monospace; font-size:10px; letter-spacing:1px; color:#999; text-transform:uppercase; }
+.nav-btn { display:inline-flex; align-items:center; gap:8px; background:var(--ink); color:#fff;
+  text-decoration:none; padding:9px 16px; border-radius:8px; font-family:'Syne',sans-serif;
+  font-weight:700; font-size:13px; transition:transform .15s, box-shadow .15s; }
+.nav-btn:hover { transform:translateY(-1px); box-shadow:0 6px 16px rgba(15,14,23,0.18); }
+.nav-btn svg { background:#fff; border-radius:50%; padding:2px; }
+
+/* HERO */
+.hero { padding:24px 0 8px; }
+.tag-row { display:flex; align-items:center; gap:10px; margin-bottom:18px; }
+.tag { font-family:'Space Mono',monospace; font-size:10px; letter-spacing:2px; color:var(--orange);
+  text-transform:uppercase; background:rgba(255,92,0,0.09); padding:4px 10px; border-radius:2px; }
+.tag-line { flex:1; height:1px; background:rgba(0,0,0,0.1); }
+
+.heading { font-family:'Unbounded',sans-serif; font-weight:900; font-size:clamp(40px,11vw,60px);
+  line-height:0.95; letter-spacing:-2px; margin-bottom:8px; }
+.heading .l2 { color:var(--purple); display:block; }
+.heading .l3 { color:var(--orange); display:block; }
+.sub { font-size:15px; color:#888; margin:16px 0 28px; }
+
+.squiggle { margin-bottom:28px; }
+
+/* POINTS */
+.points { display:flex; flex-direction:column; gap:14px; margin-bottom:32px; }
+.point { display:flex; align-items:center; gap:14px; }
+.pnum { font-family:'Unbounded',sans-serif; font-weight:900; font-size:11px; color:#fff;
+  width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.pnum.p { background:var(--purple); } .pnum.o { background:var(--orange); }
+.pnum.g { background:var(--green); } .pnum.d { background:var(--ink); }
+.ptext { font-family:'Syne',sans-serif; font-weight:700; font-size:17px; letter-spacing:-0.3px; }
+.ptext small { font-family:'DM Sans',sans-serif; font-weight:400; font-size:13px; color:#aaa; display:block; margin-top:1px; }
+
+/* INFO PILLS */
+.pills { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:36px; }
+.pill { font-family:'Space Mono',monospace; font-size:10px; letter-spacing:0.5px;
+  padding:7px 14px; border-radius:100px; font-weight:700; }
+.pill.a{background:var(--purple);color:#fff;} .pill.b{background:var(--orange);color:#fff;}
+.pill.c{background:var(--green);color:#fff;} .pill.d{background:var(--ink);color:#fff;}
+
+/* CTA CARD */
+.cta-card { background:#fff; border:1px solid rgba(0,0,0,0.07); border-radius:16px;
+  padding:32px 28px; margin-bottom:40px; box-shadow:0 8px 30px rgba(15,14,23,0.06); }
+.cta-card h2 { font-family:'Unbounded',sans-serif; font-weight:700; font-size:22px; letter-spacing:-1px; margin-bottom:6px; }
+.cta-card p { font-size:14px; color:#888; margin-bottom:24px; }
+
+.gbtn { display:flex; align-items:center; justify-content:center; gap:12px; width:100%;
+  background:var(--ink); color:#fff; text-decoration:none; padding:16px; border-radius:10px;
+  font-family:'Syne',sans-serif; font-weight:700; font-size:16px; transition:transform .15s, box-shadow .15s; }
+.gbtn:hover { transform:translateY(-2px); box-shadow:0 10px 24px rgba(15,14,23,0.2); }
+.gbtn svg { background:#fff; border-radius:50%; padding:2px; }
+
+.cta-note { text-align:center; font-family:'Space Mono',monospace; font-size:11px; color:#bbb; margin-top:16px; letter-spacing:0.5px; }
+
+.signed-in { display:flex; align-items:center; justify-content:space-between;
+  background:rgba(0,196,140,0.08); border:1px solid rgba(0,196,140,0.3); border-radius:10px; padding:14px 18px; }
+.signed-in .si-text { font-size:13px; }
+.signed-in .si-text b { font-family:'Syne',sans-serif; }
+.si-link { font-family:'Syne',sans-serif; font-weight:700; font-size:14px; color:var(--green); text-decoration:none; }
+
+/* FOOTER */
+.footer { width:100%; max-width:600px; padding:24px; text-align:center;
+  font-family:'Space Mono',monospace; font-size:11px; color:#bbb; letter-spacing:1px; margin-top:auto; }
+
+.err { background:rgba(255,92,0,0.1); border:1px solid rgba(255,92,0,0.3); color:#c44;
+  padding:12px; border-radius:8px; font-size:13px; margin-bottom:20px; text-align:center; }
+</style>
+</head>
+<body>
+  <div class="top-stripe"></div>
+
+  <div class="wrap">
+    <nav class="nav">
+      <div class="logo">BUILD<span>WITH</span><span class="ai">AI_</span></div>
+    </nav>
+
+    {% if request.query_params.get('error') %}
+    <div class="err">Something went wrong with sign-in. Please try again.</div>
+    {% endif %}
+    <div class="cta-card">
+      {% if user %}
+        <div class="signed-in">
+          <div class="si-text">Signed in as <b>{{ user.name or user.email }}</b></div>
+          <a class="si-link" href="/complete-profile">Continue →</a>
+        </div>
+      {% else %}
+        <h2>Reserve your seat</h2>
+        <p>Starts July 1st. First 3 lectures are free — sign up to get the joining details.</p>
+        <a class="gbtn" href="/auth/login">
+          <svg width="22" height="22" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.5 0 10.5-2.1 14.3-5.5l-6.6-5.6C29.6 34.5 26.9 35.5 24 35.5c-5.2 0-9.6-3.3-11.2-7.9l-6.5 5C9.6 39.6 16.3 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4 5.5l6.6 5.6C41.8 35.9 44 30.4 44 24c0-1.3-.1-2.3-.4-3.5z"/></svg>
+          Sign up with Google
+        </a>
+        <p class="cta-note">// no password · 30 seconds · we'll WhatsApp you the link</p>
+      {% endif %}
+    </div>
+    <section class="hero">
+      <div class="tag-row">
+        <span class="tag">Online Course · PK</span>
+        <div class="tag-line"></div>
+      </div>
+
+      <h1 class="heading">BUILD<span class="l2">WITH</span><span class="l3">AI_</span></h1>
+      <p class="sub">Learn to ship real AI products — from scratch.</p>
+
+      <div class="squiggle">
+        <svg width="100%" height="20" viewBox="0 0 460 20" fill="none" preserveAspectRatio="none">
+          <path d="M0 10 Q23 0 46 10 Q69 20 92 10 Q115 0 138 10 Q161 20 184 10 Q207 0 230 10 Q253 20 276 10 Q299 0 322 10 Q345 20 368 10 Q391 0 414 10 Q437 20 460 10"
+            stroke="#4F35D2" stroke-width="2" fill="none" opacity="0.4"/>
+        </svg>
+      </div>
+
+      <div class="points">
+        <div class="point"><div class="pnum p">01</div><div class="ptext">Python + Databases<small>Write real backend code from day one</small></div></div>
+        <div class="point"><div class="pnum o">02</div><div class="ptext">FastAPI + AI APIs<small>Build backends that actually think</small></div></div>
+        <div class="point"><div class="pnum g">03</div><div class="ptext">DevOps + Deployment<small>Ship it live — not just localhost</small></div></div>
+        <div class="point"><div class="pnum d">04</div><div class="ptext">Live Build Month ✦<small>Watch a real AI SaaS get built live</small></div></div>
+      </div>
+
+      <div class="pills">
+        <span class="pill b">3 FREE lectures</span>
+        <span class="pill a">3,000 PKR/mo</span>
+        <span class="pill c">2× live/week</span>
+        <span class="pill d">3 months</span>
+      </div>
+    </section>
+
+
+  </div>
+
+  <footer class="footer">BUILDWITHAI · BAHAWALPUR · 2026</footer>
+</body>
+</html>

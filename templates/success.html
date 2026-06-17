@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>You're in — BuildWithAI</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Unbounded:wght@400;700;900&family=DM+Sans:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root { --bg:#F7F4EF; --ink:#0F0E17; --purple:#4F35D2; --orange:#FF5C00; --green:#00C48C; }
+body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--ink);
+  min-height:100vh; display:flex; flex-direction:column; align-items:center; }
+.top-stripe { width:100%; height:6px; background:linear-gradient(90deg,var(--purple),var(--orange),var(--green)); }
+.wrap { width:100%; max-width:480px; padding:40px 24px; flex:1; display:flex; flex-direction:column; justify-content:center; }
+.logo { font-family:'Unbounded',sans-serif; font-weight:900; font-size:18px; letter-spacing:-1px; text-align:center; margin-bottom:32px; }
+.logo span { color:var(--purple); } .logo .ai { color:var(--orange); }
+
+.card { background:#fff; border:1px solid rgba(0,0,0,0.07); border-radius:16px; padding:44px 32px;
+  box-shadow:0 8px 30px rgba(15,14,23,0.06); text-align:center; }
+
+.check { width:72px; height:72px; margin:0 auto 24px; border-radius:50%;
+  background:var(--green); display:flex; align-items:center; justify-content:center;
+  animation:pop .5s cubic-bezier(.2,1.4,.5,1) both; }
+.check svg { stroke:#fff; }
+@keyframes pop { 0%{transform:scale(0);} 100%{transform:scale(1);} }
+
+h1 { font-family:'Unbounded',sans-serif; font-weight:800; font-size:30px; letter-spacing:-1.5px; margin-bottom:12px; }
+.lead { font-size:15px; color:#666; line-height:1.6; margin-bottom:28px; }
+.lead b { color:var(--ink); }
+
+.steps { text-align:left; background:#FBFAF8; border:1px solid rgba(0,0,0,0.06);
+  border-radius:12px; padding:20px; margin-bottom:28px; }
+.steps-title { font-family:'Space Mono',monospace; font-size:10px; letter-spacing:2px; color:#aaa; text-transform:uppercase; margin-bottom:14px; }
+.snext { display:flex; align-items:flex-start; gap:12px; margin-bottom:14px; }
+.snext:last-child { margin-bottom:0; }
+.sdot { width:22px; height:22px; border-radius:50%; background:var(--purple); color:#fff;
+  font-family:'Unbounded',sans-serif; font-weight:900; font-size:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.sdot.o { background:var(--orange); } .sdot.g { background:var(--green); }
+.snext p { font-size:13px; color:#555; line-height:1.4; }
+
+.foot-note { font-family:'Space Mono',monospace; font-size:11px; color:#bbb; letter-spacing:0.5px; }
+.editlink { display:block; margin-top:20px; font-family:'Syne',sans-serif; font-weight:700; font-size:14px; color:var(--purple); text-decoration:none; }
+.editlink:hover { text-decoration:underline; }
+.logout { display:inline-block; margin-top:14px; font-family:'Syne',sans-serif; font-weight:700; font-size:13px; color:#bbb; text-decoration:none; }
+</style>
+</head>
+<body>
+  <div class="top-stripe"></div>
+  <div class="wrap">
+    <div class="logo">BUILD<span>WITH</span><span class="ai">AI_</span></div>
+
+    <div class="card">
+      <div class="check">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+
+      <h1>You're on the list 🔥</h1>
+      <p class="lead">Thanks <b>{{ user.name or 'there' }}</b> — your seat is reserved.<br>You'll get your <b>invitation shortly</b> on WhatsApp.</p>
+
+      <div class="steps">
+        <div class="steps-title">What happens next</div>
+        <div class="snext"><div class="sdot">1</div><p>We verify your details and add you to the course WhatsApp group.</p></div>
+        <div class="snext"><div class="sdot o">2</div><p>You'll get the joining link there before the first lecture on <b>July 1st</b>.</p></div>
+        <div class="snext"><div class="sdot g">3</div><p>First 3 lectures are completely free — show up and start building.</p></div>
+      </div>
+
+      <p class="foot-note">// keep an eye on your WhatsApp</p>
+      <a class="editlink" href="/complete-profile">Wrong number or name? Edit details</a>
+      <a class="logout" href="/logout">Sign out</a>
+    </div>
+  </div>
+</body>
+</html>

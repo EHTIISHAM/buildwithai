@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Complete your signup — BuildWithAI</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Unbounded:wght@400;700;900&family=DM+Sans:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root { --bg:#F7F4EF; --ink:#0F0E17; --purple:#4F35D2; --orange:#FF5C00; --green:#00C48C; }
+body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--ink);
+  min-height:100vh; display:flex; flex-direction:column; align-items:center; }
+.top-stripe { width:100%; height:6px; background:linear-gradient(90deg,var(--purple),var(--orange),var(--green)); }
+.wrap { width:100%; max-width:480px; padding:40px 24px; flex:1; display:flex; flex-direction:column; justify-content:center; }
+.logo { font-family:'Unbounded',sans-serif; font-weight:900; font-size:18px; letter-spacing:-1px; text-align:center; margin-bottom:32px; }
+.logo span { color:var(--purple); } .logo .ai { color:var(--orange); }
+
+.card { background:#fff; border:1px solid rgba(0,0,0,0.07); border-radius:16px; padding:36px 30px;
+  box-shadow:0 8px 30px rgba(15,14,23,0.06); }
+.step { font-family:'Space Mono',monospace; font-size:10px; letter-spacing:2px; color:var(--orange); text-transform:uppercase; margin-bottom:10px; }
+h1 { font-family:'Unbounded',sans-serif; font-weight:700; font-size:26px; letter-spacing:-1px; margin-bottom:8px; }
+.lead { font-size:14px; color:#888; margin-bottom:28px; }
+
+label { display:block; font-family:'Syne',sans-serif; font-weight:700; font-size:13px; margin-bottom:8px; }
+input { width:100%; padding:14px 16px; border:1.5px solid rgba(0,0,0,0.12); border-radius:10px;
+  font-family:'DM Sans',sans-serif; font-size:15px; margin-bottom:20px; transition:border .15s; background:#FBFAF8; }
+input:focus { outline:none; border-color:var(--purple); background:#fff; }
+.hint { font-family:'Space Mono',monospace; font-size:10px; color:#bbb; margin:-14px 0 20px; }
+
+.btn { width:100%; background:var(--ink); color:#fff; border:none; padding:16px; border-radius:10px;
+  font-family:'Syne',sans-serif; font-weight:700; font-size:16px; cursor:pointer; transition:transform .15s, box-shadow .15s; }
+.btn:hover { transform:translateY(-2px); box-shadow:0 10px 24px rgba(15,14,23,0.2); }
+
+.err { background:rgba(255,92,0,0.1); border:1px solid rgba(255,92,0,0.3); color:#c44;
+  padding:12px; border-radius:8px; font-size:13px; margin-bottom:20px; text-align:center; }
+.email-chip { display:inline-flex; align-items:center; gap:8px; background:rgba(0,196,140,0.08);
+  border:1px solid rgba(0,196,140,0.25); border-radius:100px; padding:6px 14px; font-size:12px; margin-bottom:24px; }
+.email-chip .dot { width:7px; height:7px; border-radius:50%; background:var(--green); }
+</style>
+</head>
+<body>
+  <div class="top-stripe"></div>
+  <div class="wrap">
+    <div class="logo">BUILD<span>WITH</span><span class="ai">AI_</span></div>
+
+    <div class="card">
+      <div class="step">{% if record and record.completed %}Edit your details{% else %}Step 2 of 2{% endif %}</div>
+      <h1>{% if record and record.completed %}Update your info ✏️{% else %}Almost there 🔥{% endif %}</h1>
+      <p class="lead">Your name and WhatsApp number — that's how we'll send your joining link. You can change either one.</p>
+
+      <div class="email-chip"><span class="dot"></span>{{ user.email }}</div>
+
+      {% if error %}<div class="err">{{ error }}</div>{% endif %}
+
+      <form method="post" action="/complete-profile">
+        <label for="name">Full name</label>
+        <input type="text" id="name" name="name" value="{{ (record.name if record else None) or user.name or '' }}" required placeholder="Ahmad Khan">
+
+        <label for="phone">WhatsApp number</label>
+        <input type="tel" id="phone" name="phone" value="{{ record.phone if record and record.phone else '' }}" required placeholder="03XX XXXXXXX">
+        <div class="hint">// double-check this — it's where your invite goes</div>
+
+        <button type="submit" class="btn">{% if record and record.completed %}Save changes →{% else %}Reserve my seat →{% endif %}</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
