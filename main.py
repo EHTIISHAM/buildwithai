@@ -267,6 +267,9 @@ async def admin_visitors(token: str = "", limit: int = 200):
     async for v in db.visitors.find().sort("visited_at", -1).limit(limit):
         visits.append({
             "ip": v.get("ip"),
+            "country": v.get("country"),
+            "region": v.get("region"),
+            "city": v.get("city"),
             "device_type": v.get("device_type"),
             "browser": v.get("browser"),
             "os": v.get("os"),
