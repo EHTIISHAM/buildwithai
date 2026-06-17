@@ -14,7 +14,7 @@ from authlib.integrations.starlette_client import OAuth, OAuthError
 from dotenv import load_dotenv
 
 from user_agents import parse
-
+import httpx
 from database import db, init_indexes
 
 load_dotenv()
@@ -66,7 +66,25 @@ def get_client_ip(request: Request) -> str:
         return real.strip()
     return request.client.host if request.client else "unknown"
 
-
+async def get_location(ip: str) -> dict:
+    if ip in ("unknown", "127.0.0.1") or ip.startswith("192.168") or ip.startswith("10."):
+        return {"country": None, "region": None, "city": None}
+    try:
+        async with httpx.AsyncClient(timeout=2.0) as client:
+            r = await client.get(
+                f"http://ip-api.com/json/{ip}?fields=status,country,regionName,city"
+            )
+            d = r.json()
+            if d.get("status") != "success":
+                return {"country": None, "region": None, "city": None}
+            return {
+                "country": d.get("country"),
+                "region": d.get("regionName"),
+                "city": d.get("city"),
+            }
+    except Exception:
+        return {"country": None, "region": None, "city": None}
+    
 async def log_visit(request: Request):
     """Store a readable record of who hit the landing page."""
     ua_string = request.headers.get("user-agent", "")
@@ -82,9 +100,13 @@ async def log_visit(request: Request):
         device_type = "Bot"
     else:
         device_type = "Unknown"
-
+    ip = get_client_ip(request)
+    loc = await get_location(ip)
     await db.visitors.insert_one({
-        "ip": get_client_ip(request),
+        "ip": ip,
+        "country": loc["country"],
+        "region": loc["region"],
+        "city": loc["city"],
         "device_type": device_type,
         "browser": f"{ua.browser.family} {ua.browser.version_string}".strip(),
         "os": f"{ua.os.family} {ua.os.version_string}".strip(),
@@ -95,7 +117,6 @@ async def log_visit(request: Request):
         "path": str(request.url.path),
         "visited_at": datetime.now(timezone.utc),
     })
-
 
 
 # ─── Routes ────────────────────────────────────────────────
