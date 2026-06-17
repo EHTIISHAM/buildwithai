@@ -59,8 +59,11 @@ async def ensure_indexes():
 async def landing(request: Request):
     await ensure_indexes()
     user = request.session.get("user")
-    return templates.TemplateResponse("index.html", {"request": request, "user": user})
-
+    return templates.TemplateResponse(
+    request,
+    "index.html",
+    {"user": user},
+)
 
 @app.get("/auth/login")
 async def login(request: Request):
@@ -115,8 +118,9 @@ async def complete_profile_page(request: Request):
     # Pull existing record so the form can pre-fill name + phone when editing
     record = await db.signups.find_one({"google_id": user["google_id"]})
     return templates.TemplateResponse(
+        request,
         "complete_profile.html",
-        {"request": request, "user": user, "record": record, "error": None},
+        {"user": user, "record": record, "error": None},
     )
 
 
@@ -135,8 +139,9 @@ async def complete_profile_submit(
     if len(cleaned) < 10:
         record = await db.signups.find_one({"google_id": user["google_id"]})
         return templates.TemplateResponse(
+            request,
             "complete_profile.html",
-            {"request": request, "user": user, "record": record,
+            {"user": user, "record": record,
              "error": "Please enter a valid phone number."},
         )
 
@@ -158,7 +163,7 @@ async def success(request: Request):
     user = request.session.get("user")
     if not user:
         return RedirectResponse("/")
-    return templates.TemplateResponse("success.html", {"request": request, "user": user})
+    return templates.TemplateResponse(request, "success.html", {"user": user})
 
 
 @app.get("/logout")
